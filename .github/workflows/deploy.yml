@@ -16,7 +16,6 @@ jobs:
       id-token: write
       contents: read
   
-
     steps:
     - name: Checkout code to go module directory
       uses: actions/checkout@v4
