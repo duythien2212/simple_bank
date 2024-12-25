@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/duythien2212/simple_bank/util"
 	_ "github.com/lib/pq"
-	"github.com/techschool/simplebank/util"
 )
 
 var testQueries *Queries
