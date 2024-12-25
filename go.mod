@@ -2,6 +2,8 @@ module github.com/duythien2212/simple_bank
 
 go 1.23.3
 
+replace github.com/techschool/simplebank => github.com/duythien2212/simple_bank v0.0.0
+
 require (
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29
 	github.com/gin-gonic/gin v1.10.0
