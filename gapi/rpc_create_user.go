@@ -8,6 +8,8 @@ import (
 	"github.com/duythien2212/simple_bank/pb"
 	"github.com/duythien2212/simple_bank/util"
 	"github.com/duythien2212/simple_bank/val"
+	"github.com/duythien2212/simple_bank/worker"
+	"github.com/hibiken/asynq"
 	"github.com/lib/pq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -33,7 +35,6 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
-
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			log.Print(pqErr.Code.Name())
@@ -44,6 +45,17 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create user: %s", err)
+	}
+
+	// TODO: use db transaction
+	taskPayload := &worker.PayloadVerifyEmail{
+		Username: user.Username,
+	}
+
+	opt := []asynq.Option{}
+	err = server.taskDistributer.DistributeTaskSendVerifyEmail(ctx, taskPayload)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to distribute task to send verification email")
 	}
 
 	rsp := &pb.CreateUserResponse{
